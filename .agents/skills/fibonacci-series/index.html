@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci Series Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl">
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Fibonacci Series Generator</h1>
+                <p class="text-gray-600">Generate the beautiful Fibonacci sequence up to any number of terms</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="mb-8">
+                <label for="terms" class="block text-lg font-semibold text-gray-700 mb-3">
+                    Number of Terms
+                </label>
+                <div class="flex gap-3">
+                    <input 
+                        type="number" 
+                        id="terms" 
+                        min="1" 
+                        max="100" 
+                        value="10" 
+                        class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition"
+                        placeholder="Enter number of terms"
+                    >
+                    <button 
+                        onclick="generateFibonacci()" 
+                        class="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-700 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-purple-800 transition transform hover:scale-105 active:scale-95"
+                    >
+                        Generate
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Enter a number between 1 and 100</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsContainer" class="hidden mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Results</h2>
+                
+                <!-- Sequence Display -->
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg mb-4 border-2 border-purple-200">
+                    <p class="text-sm font-semibold text-purple-700 mb-2">SEQUENCE:</p>
+                    <p id="sequenceDisplay" class="text-lg text-gray-700 font-mono break-words leading-relaxed"></p>
+                </div>
+
+                <!-- Statistics -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                        <p class="text-sm font-semibold text-blue-700">TOTAL TERMS</p>
+                        <p id="totalTerms" class="text-3xl font-bold text-blue-900 mt-1">0</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                        <p class="text-sm font-semibold text-green-700">LAST TERM</p>
+                        <p id="lastTerm" class="text-3xl font-bold text-green-900 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Sum Statistics -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-yellow-50 p-4 rounded-lg border-2 border-yellow-200">
+                        <p class="text-sm font-semibold text-yellow-700">SUM</p>
+                        <p id="sumDisplay" class="text-2xl font-bold text-yellow-900 mt-1">0</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+                        <p class="text-sm font-semibold text-red-700">AVERAGE</p>
+                        <p id="averageDisplay" class="text-2xl font-bold text-red-900 mt-1">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorContainer" class="hidden mb-8">
+                <div class="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-lg" role="alert">
+                    <p class="font-semibold">Error</p>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-purple-500">
+                <h3 class="font-semibold text-gray-800 mb-2">📚 About Fibonacci</h3>
+                <p class="text-gray-700 text-sm">
+                    The Fibonacci sequence is a series of numbers where each number is the sum of the two preceding ones, 
+                    starting from 0 and 1. It appears frequently in nature, art, and mathematics.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Generate Fibonacci series up to n terms
+         */
+        function generateFibonacci() {
+            const termsInput = document.getElementById('terms').value;
+            const resultsContainer = document.getElementById('resultsContainer');
+            const errorContainer = document.getElementById('errorContainer');
+
+            // Validate input
+            const terms = parseInt(termsInput);
+            if (isNaN(terms) || terms < 1 || terms > 100) {
+                showError('Please enter a valid number between 1 and 100');
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            errorContainer.classList.add('hidden');
+
+            // Generate Fibonacci series
+            const fibonacci = [];
+            let a = 0, b = 1;
+
+            for (let i = 0; i < terms; i++) {
+                fibonacci.push(a);
+                const temp = a + b;
+                a = b;
+                b = temp;
+            }
+
+            // Calculate statistics
+            const sum = fibonacci.reduce((acc, num) => acc + num, 0);
+            const average = (sum / fibonacci.length).toFixed(2);
+            const lastTerm = fibonacci[fibonacci.length - 1];
+
+            // Display results
+            displayResults(fibonacci, sum, average, lastTerm, terms);
+        }
+
+        /**
+         * Display the results on the page
+         */
+        function displayResults(fibonacci, sum, average, lastTerm, terms) {
+            const sequenceDisplay = document.getElementById('sequenceDisplay');
+            const totalTermsDisplay = document.getElementById('totalTerms');
+            const lastTermDisplay = document.getElementById('lastTerm');
+            const sumDisplay = document.getElementById('sumDisplay');
+            const averageDisplay = document.getElementById('averageDisplay');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            // Format and display sequence with better readability
+            sequenceDisplay.textContent = fibonacci.join(', ');
+            totalTermsDisplay.textContent = terms.toLocaleString();
+            lastTermDisplay.textContent = lastTerm.toLocaleString();
+            sumDisplay.textContent = sum.toLocaleString();
+            averageDisplay.textContent = average.toLocaleString();
+
+            resultsContainer.classList.remove('hidden');
+        }
+
+        /**
+         * Show error message
+         */
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('hidden');
+        }
+
+        /**
+         * Allow Enter key to generate
+         */
+        document.getElementById('terms').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                generateFibonacci();
+            }
+        });
+
+        // Auto-generate on page load
+        window.addEventListener('load', function() {
+            generateFibonacci();
+        });
+    </script>
+</body>
+</html>
